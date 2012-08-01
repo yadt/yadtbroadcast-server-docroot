@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="lib/jquery.min.js"></script>
+        <script src="lib/jquery-ui.min.js"></script>
+        <script src="lib/autobahn.js"></script>
+        <script src="lib/d3.js"></script>
+
+        <script src="lib/ybc.js"></script>
+
+        <link type="text/css" rel="stylesheet" href="styles/ybc.css"/>
+    </head>
+    <body>
+        <div class="notice">
+            <h3>Notice: URL only temporarily</h3>
+            This service will soon be relocated to its final destination;
+            you will be kept informed.                                                                                       
+        </div>
+
+        <div id="wrapper">
+            <section/>
+        </div>
+        <div id="overlay">
+            <div id="countdown">
+                <h3>Connection lost!</h3>
+                Reconnecting in<br/>
+                <div id="seconds">
+                    <span id="counter"></span> seconds
+                </div>
+            </div>
+        </div>
+
+        <script>
+            var target = $.getUrlVar('target');   
+            onSessionOpen = function(sess) {
+                sess.subscribe(target, onEvent);
+            };
+            var col_width = $.getUrlVar('col_width') || '30em';
+
+            function URI(d) {
+                return d.uri;
+            }
+
+            function NAME(d) {
+                return d.name;
+            }
+
+            function onEvent(topicUri, event) {
+                if (event.id == "force-reload") {
+                    window.location.replace(window.location.href);
+                    window.location.reload(true);
+                }
+                if (event.id == "full-update") {
+                    console.log(event.id + " received");
+                    console.log(event);
+                    var groups = d3.select("section").selectAll("div")
+                        .data(event.payload)
+                        ;
+                    groups.enter()
+                        .append("div")
+                        .attr("class", "hostGroupCluster")
+                        ;
+                    groups.exit().remove();
+                    groups = d3.select("section").selectAll("div").data(event.payload);
+
+                    var hosts = groups.selectAll("div").data(I, key=NAME);
+                    var new_hosts = hosts.enter()
+                        .append("div")
+                        .attr("class", "hostGroupItem")
+                        .style("width", col_width)
+                        ;
+                    new_hosts
+                        .append("h2")
+                        .attr("class", "hosts")
+                        .text(function(d){return d.name;})
+                        ;
+                    new_hosts
+                        .append("ul")
+                        .attr("class", "hosts")
+                        ;
+                    new_hosts
+                        .append("div")
+                        .attr("class", "hosts")
+                            .append("table")
+                        ;
+                    hosts.exit().remove();
+                    hosts = groups.selectAll("div").data(I, key=NAME);
+
+                    var services = hosts.selectAll("ul.hosts").selectAll("li")
+                        .data(function(d){return d.services;}, key=URI)
+                        ;
+                    services.enter()
+                        .append("li")
+                        .attr("class", "service")
+                        .text(function(d){return d.name;})
+                        .style("background-color", get_background_color)
+                        ;
+
+                    services = d3.selectAll("li.service")
+                        .transition().duration(1000).ease("exp-in-out")
+                        .style("background-color", get_background_color)
+                        ;
+
+
+
+                    var artefacts = hosts
+                        .select("table")
+                        .selectAll("tr")
+                        .data(function(d){return d.artefacts;}, key=URI)
+                        ;
+
+                    var new_artefacts = artefacts.enter()
+                        .append("tr")
+                        .attr("class", "artefact")
+                        ;
+                    new_artefacts
+                        .append("td")
+                        .attr("class", "name")
+                        .text(function(d){console.log('new: ' + d.name); return d.name;})
+                        ;
+                    new_artefacts
+                        .append("td")
+                        .attr("class", "value")
+                        .text(function(d){return d.current;})
+                        ;
+                    artefacts.exit().remove();
+
+                    hosts.selectAll("tr.artefact")
+                        .select("td.value")
+                        .text(function(d){return d.current;})
+                        ;
+
+                }
+                if (event.id == "service-change") {
+                    console.log(event.id + " received");
+                    console.log(event);
+                    var services = d3.select("section").selectAll(".service")
+                        .data(event.payload, key=URI)
+                            .transition().duration(1000).ease("exp-in-out")
+                            .style("background-color", get_background_color)
+                        ;
+                }
+            }
+        </script>
+    </body>
+</html>

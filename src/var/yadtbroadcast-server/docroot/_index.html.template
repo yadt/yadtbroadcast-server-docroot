@@ -1,0 +1,59 @@
+<html>
+    <head>
+        <title>yadt broadcaster | overviews and logs</title>
+        <link rel="stylesheet" type="text/css" href="styles/minimal.css"/>
+        <style>
+            dl {
+                padding-left: 1em;
+            }
+            dt {
+                font-weight: bold;
+            }
+            dd {
+                padding-left: 4em;
+            }
+            ul {
+                list-style: none;
+                padding: 1em 0;
+                margin-bottom: 2em;
+            }
+            li {
+                margin-top: 1em;
+            }
+        </style>
+    </head>
+    <body>
+
+        <h1>yadt broadcaster | overview pages</h1>
+
+        <ul>
+            <li>
+                <a href="hosts-overview.html?target=">hosts-overview.html?target=</a><br/>
+                <em>parameters:</em>
+                <dl>
+                    <dt>target</dt><dd>name of the interesting target</dd>
+                    <dt>col_width</dt><dd>sets the width of each host</dd>
+                </dl>
+            </li>
+            <li><a href="targets-overview.html?targets=">targets-overview.html?targets=</a><br/>
+                <em>parameters:</em>
+                <dl>
+                    <dt>targets</dt><dd>names of interesting targets, comma-separated</dd>
+                </dl>
+            </li>
+            <li><a href="artefacts-overview.html?ignore_prefix=&target=">artefacts-overview.html?ignore_prefix=&target=</a><br/>
+                <em>parameters:</em>
+                <dl>
+                    <dt>target</dt><dd>name of the interesting target</dd>
+                    <dt>ignore_prefix</dt><dd>ignores artefacts matched by this regexp</dd>
+                </dl>
+            </li>
+            <li><a href="events-overview.html?target=">events-overview.html?target=</a><br/>
+                <em>parameters:</em>
+                <dl>
+                    <dt>target</dt><dd>name of the interesting target</dd>
+                </dl>
+            </li>
+        </ul>
+    </body>
+</html>

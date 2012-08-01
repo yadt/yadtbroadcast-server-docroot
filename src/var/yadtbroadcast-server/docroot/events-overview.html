@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="lib/jquery.min.js"></script>
+        <script src="lib/jquery-ui.min.js"></script>
+        <script src="lib/autobahn.js"></script>
+        <script src="lib/d3.js"></script>
+        <script src="lib/moment.min.js"></script>
+
+        <script src="lib/ybc.js"></script>
+
+        <style>
+            @import url(http://fonts.googleapis.com/css?family=Ubuntu:400,700);
+
+            * {
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                padding: 2em 2em;
+                font-family: 'Ubuntu Light', sans-serif;
+            }
+            #wrapper {
+                padding-top: 1em;
+            }
+            #wrapper div {
+                font-size: 80%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="notice">
+            <h3>Notice: URL only temporarily</h3>
+            This service will soon be relocated to its final destination;
+            you will be kept informed.
+        </div>
+
+        <div id="wrapper">
+        </div>
+
+        <div id="overlay">
+            <div id="countdown">
+                <h3>Connection lost!</h3>
+                Reconnecting in<br/>
+                <div id="seconds">
+                    <span id="counter"></span> seconds
+                </div>
+            </div>
+        </div>
+
+        <script>
+            var target = $.getUrlVar('target');   
+            onSessionOpen = function(sess) {
+                sess.subscribe(target, onEvent);
+            };
+
+            var max_events = $.getUrlVar('max_events') || 40;
+
+            var events = [];
+            var nr = 0;
+
+            function onEvent(topicUri, event) {
+                if (event.id == "force-reload") {
+                    window.location.replace(window.location.href);
+                    window.location.reload(true);
+                }
+                if (event.type == "event") {
+                    console.log(event);
+
+                    if (event.id == "cmd" || event.id == "request") {
+                        event.timestamp = moment().format("YYYY-MM-DD HH:mm:ss");
+                        event.nr = nr++;
+                        events.push(event);
+                        while (events.length > max_events) {
+                            events.shift();
+                        }
+                        var lines = d3.select("#wrapper")
+                            .selectAll("div")
+                            .data(events, key=function(d){return d.nr;});
+                            lines.enter().append("div")
+                                .style("position", "relative")
+                                .text(function(d, i){
+                                line = d.nr + " - " + d.timestamp + " - " + d.id + " " + d.cmd;
+                                if (d.args) {
+                                    for (i in d.args) {
+                                        line += " " + d.args[i];
+                                    }
+                                }
+                                if (d.state) {
+                                    line += " " + d.state;
+                                }
+                                return line;
+                            });
+                        lines.exit().remove();
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>

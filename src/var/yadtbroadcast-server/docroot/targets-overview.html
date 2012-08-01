@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="lib/jquery.min.js"></script>
+        <script src="lib/jquery-ui.min.js"></script>
+        <script src="lib/autobahn.js"></script>
+        <script src="lib/d3.js"></script>
+
+        <script src="lib/ybc.js"></script>
+
+        <link type="text/css" rel="stylesheet" href="styles/ybc.css"/>
+        <style>
+            td {
+                width: 40px;
+                height: 40px;
+                border: 1px solid black;
+            }
+            h2 {
+                text-align: right;
+                margin: 0;
+                margin-right: 1em;
+                width: 6em;
+            }
+            a {
+                color: #fff;
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="notice">
+            <h3>Notice: URL only temporarily</h3>
+            This service will soon be relocated to its final destination;
+            you will be kept informed.                                                                                       
+        </div>
+
+        <div id="wrapper">
+            <section><table/></section>
+        </div>
+        <div id="overlay">
+            <div id="countdown">
+                <h3>Connection lost!</h3>
+                Reconnecting in<br/>
+                <div id="seconds">
+                    <span id="counter"></span> seconds
+                </div>
+            </div>
+        </div>
+
+        <script>
+            var targetnames = [];
+            var targets = Object();
+
+            onSessionOpen = function(sess) {
+                targetnames = $.getUrlVar('targets').split(",");
+                targetnames.map(function(target){
+                    console.log("subscribing to " + target);
+                    sess.subscribe(target, onEvent);
+                });
+            };
+
+            function get_padding(d) {
+                return get_up_down_response(d, "0", "10px 1px");
+            }
+            function get_border_width(d) {
+                return get_up_down_response(d, "10px 0px", "0");
+            }
+
+            function onEvent(topicUri, event) {
+                if (event.id == "force-reload") {
+                    window.location.replace(window.location.href);
+                    window.location.reload(true);
+                }
+                if (event.id == "full-update") {
+                    console.log(event.id + " received");
+                    console.log(event);
+                    targets[event.target] = event.payload;
+
+                    var target_doms = d3.select("table").selectAll("tr")
+                        .data(targetnames)
+                        .enter()
+                            .append("tr")
+                            .attr("class", "hostGroupCluster")
+                            ;
+                            target_doms.append("td").append("h2")
+                            .append("a")
+                                    .attr("href", function(d){return "/hosts-overview.html?target=" + d;})
+                                    .text(I);
+                    d3.select("table").selectAll("tr").selectAll("td")
+                        .data(
+                            function(d){
+                                var services = [];
+                                if (targets[d]) {
+                                    targets[d].map(function(hostgroup){
+                                        hostgroup.map(function(host){
+                                            host.services.map(function(service){
+                                                services.push(service);
+                                            });
+                                        });
+                                    });
+                                }
+                                return services;
+                            }, key=function(d) {
+                                return d.uri;
+                            }
+                        )
+                        .enter()
+                            .append("td")
+                            .attr("class", "service")
+                            .attr("title", function(d){return d.uri;})
+                            .style("height", "40px")
+                        ;
+                    d3.selectAll("td.service")
+                        .transition().duration(1000).ease("exp-in-out")
+                        .style("background-color", get_background_color)
+                        .style("padding", get_padding)
+                        .style("border-width", get_border_width)
+                        ;
+                }
+                if (event.id == "service-change") {
+                    console.log(event.id + " received");
+                    console.log(event);
+                    var services = d3.select("section").selectAll(".service")
+                        .data(event.payload, key=function(d){return d.uri;})
+                            .transition().duration(1000).ease("exp-in-out")
+                            .style("background-color", get_background_color)
+                            .style("padding", get_padding)
+                            .style("border-width", get_border_width)
+                        ;
+                }
+            }
+        </script>
+    </body>
+</html>

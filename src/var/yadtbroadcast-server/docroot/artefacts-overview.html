@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="lib/jquery.min.js"></script>
+        <script src="lib/jquery-ui.min.js"></script>
+        <script src="lib/autobahn.js"></script>
+        <script src="lib/d3.js"></script>
+
+        <script src="lib/ybc.js"></script>
+        <script src="artefacts-overview.js"></script>
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                padding: 2em 2em;
+                font-family: 'Droid Sans', sans-serif;
+            }
+            h2 {
+                padding: 1ex 1ex 1ex 0;
+                text-transform: uppercase;
+            }
+            .artefactname {
+                text-align: right;
+                padding-right: 2em;
+            }
+            th {
+                padding-right: 1em;
+            }
+            table {
+                border-collapse: collapse;
+            }
+            tr {
+                border-bottom: 1px solid grey;
+            }
+            .version {
+                padding: 1ex 1ex;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="notice">
+            <h3>Notice: URL only temporarily</h3>
+            This service will soon be relocated to its final destination; 
+            you will be kept informed.
+        </div>
+
+        <div id="wrapper">
+            <section/>
+        </div>
+        <div id="overlay">
+            <div id="countdown">
+                <h3>Connection lost!</h3>
+                Reconnecting in<br/>
+                <div id="seconds">
+                    <span id="counter"></span> seconds
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
