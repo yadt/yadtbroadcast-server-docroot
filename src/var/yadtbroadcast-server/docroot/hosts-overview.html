@@ -25,7 +25,7 @@
         </div>
 
         <script>
-            var target = $.getUrlVar('target');   
+            var target = $.getUrlVar('target');
             onSessionOpen = function(sess) {
                 sess.subscribe(target, onEvent);
             };
@@ -72,11 +72,13 @@
                         .append("ul")
                         .attr("class", "hosts")
                         ;
+                    /*
                     new_hosts
                         .append("div")
                         .attr("class", "hosts")
                             .append("table")
                         ;
+                    */
                     hosts.exit().remove();
                     hosts = groups.selectAll("div").data(I, key=NAME);
 
@@ -97,7 +99,7 @@
 
 
 
-                    var artefacts = hosts
+                    /*var artefacts = hosts
                         .select("table")
                         .selectAll("tr")
                         .data(function(d){return d.artefacts;}, key=URI)
@@ -123,7 +125,7 @@
                         .select("td.value")
                         .text(function(d){return d.current;})
                         ;
-
+                    */
                 }
                 if (event.id == "service-change") {
                     console.log(event.id + " received");
