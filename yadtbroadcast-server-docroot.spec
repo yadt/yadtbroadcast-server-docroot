@@ -1,6 +1,6 @@
 Summary: yadtbroadcast server docroot
 Name: yadtbroadcast-server-docroot
-Version: 1.0.14
+Version: 1.0.16
 Release: 1
 License: GPL
 Vendor: Immobilien Scout GmbH
